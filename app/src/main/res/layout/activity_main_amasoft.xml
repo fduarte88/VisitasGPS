@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/txtNumclienteRuta"
+            android:layout_width="52dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.44"
+            android:ems="10"
+            android:inputType="number" >
+
+            <requestFocus />
+        </EditText>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_weight="0.11"
+            android:gravity="center"
+            android:text="@string/vacio" />
+
+        <ImageButton
+            android:id="@+id/btncomprobarcliente"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_weight="0.31"
+            android:src="@drawable/btn_check_buttonless_on" />
+        
+        <Button
+            android:id="@+id/btnfoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.41"
+            android:text="@string/foto" />
+        
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/txtnombrecliente"
+        android:layout_width="303dp"
+        android:layout_height="33dp"
+        android:gravity="center"
+        android:text="@string/Cliente" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="260dp"
+        android:layout_height="156dp"
+        android:src="@drawable/sinfoto" />
+
+    <Button
+        android:id="@+id/btnverenmapa"
+        android:layout_width="292dp"
+        android:layout_height="wrap_content"
+        android:text="Ver en El Mapa" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.74"
+        >
+
+        <LinearLayout
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            
+            <TextView
+                android:id="@+id/message_idd1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="0.11"
+                android:gravity="center"
+                android:text="@string/ubicacionactual" />
+            
+            <TextView
+                android:id="@+id/message_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="0.11"
+                android:gravity="center"
+                android:text="@string/vacio" />
+
+             <TextView
+                android:id="@+id/message_id2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.11"
+                android:text="TextView" />
+             
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="0.11"
+                android:gravity="center"
+                android:text="@string/vacio" />
+
+        </LinearLayout>
+        
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            
+            <TextView
+                android:id="@+id/message_idd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="0.11"
+                android:gravity="center"
+                android:text="@string/ubicacionguardada" />
+
+             <TextView
+                 android:id="@+id/latitudcliente"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="0.11"
+                 android:text="TextView" />
+             
+             <TextView
+                 android:id="@+id/longitudcliente"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="0.11"
+                 android:text="TextView" />
+
+        </LinearLayout>
+        
+    </LinearLayout>
+
+    <TextView
+                 android:id="@+id/distancia"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="0.11"
+                 android:text="TextView" />
+    
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btnaceptar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.41"
+            android:text="@string/Guardar" />
+
+        <Button
+            android:id="@+id/btnSalir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.50"
+            android:text="@string/Salir" />
+    </LinearLayout>
+
+</LinearLayout>

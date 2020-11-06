@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dip" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/txtNumcliente"
+            android:layout_width="98dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number" >
+        <requestFocus />
+        </EditText>
+
+        <ImageButton
+            android:id="@+id/btncomprobarcliente"
+            android:layout_width="69dp"
+            android:layout_height="32dp"
+            android:src="@drawable/btn_check_buttonless_on" />
+
+        <TextView
+            android:id="@+id/textcliente"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_weight="1.06"
+            android:text="@string/Cliente" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/TextView02"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_weight="0.90"
+        android:text="@string/Ajustes" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btniniciarvisita"
+            android:layout_width="166dp"
+            android:layout_height="match_parent"
+            android:text="@string/iniciarvisita" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/btnterminarvisita"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/terminarvisita" />
+
+            <Button
+                android:id="@+id/btncancelarvisita"
+                
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/cancelarvisita" />
+
+            
+        </LinearLayout>
+    </LinearLayout>
+
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="#ff0"
+        android:layout_gravity="center_vertical"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/TextView012"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/visitaactual" />
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="#ff0"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/Texttiposolicitud"
+            android:layout_width="191dp"
+            android:layout_height="wrap_content"
+            android:text="@string/fecha" />
+
+        <TextView
+            android:id="@+id/lblfechainicio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+         android:background="#ff0"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/TextView04"
+            android:layout_width="189dp"
+            android:layout_height="wrap_content"
+            android:text="@string/horainicio" />
+
+        <TextView
+            android:id="@+id/lblhorainicio"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="TextView" />
+
+    </LinearLayout>
+    
+    
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="#ff0"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/lblclientevisitaavierta"
+            android:layout_width="112dp"
+            android:layout_height="wrap_content"
+            android:text="@string/vacio" />
+
+    </LinearLayout>
+    
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+                android:background="#0ff"
+
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/lblultimavisita"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/vacio" />
+
+    </LinearLayout>
+    
+    
+    
+    
+    
+    
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/lblull1"
+            android:layout_width="112dp"
+            android:layout_height="wrap_content"
+            android:text="@string/vacio" />
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/lblporgps"
+            android:layout_width="112dp"
+            android:layout_height="wrap_content"
+            android:text="@string/vacio" />
+
+        <TextView
+            android:id="@+id/lblporantena"
+            android:layout_width="112dp"
+            android:layout_height="wrap_content"
+            android:text="@string/vacio" />
+        
+        
+    </LinearLayout>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/txtLatitudGPS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                 />
+
+            <TextView
+                android:id="@+id/txtLongitudGPS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <TextView
+                android:id="@+id/txtLatitudNet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                 />
+
+            <TextView
+                android:id="@+id/txtLongitudNet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/bntreporte"
+                android:layout_width="305dp"
+                android:layout_height="wrap_content"
+                android:text="@string/reporte" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+    
+</LinearLayout>

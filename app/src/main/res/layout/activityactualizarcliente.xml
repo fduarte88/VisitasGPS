@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/Texttiposolicitud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:gravity="center"
+        android:text="@string/actualizarcliente" />
+
+    <TextView
+        android:id="@+id/TextView02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:gravity="center"
+        android:text="@string/Cliente" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/txtNumclienteRuta"
+            android:layout_width="52dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.44"
+            android:ems="10"
+            android:inputType="number" >
+
+            <requestFocus />
+        </EditText>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_weight="0.11"
+            android:gravity="center"
+            android:text="@string/vacio" />
+        
+  
+        
+        <ImageButton
+            android:id="@+id/btncomprobarcliente"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_weight="0.31"
+            android:src="@drawable/btn_check_buttonless_on" />
+        
+        
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtnombrecliente"
+        android:layout_width="303dp"
+        android:layout_height="33dp"
+        android:gravity="center"
+        android:text="@string/Cliente" />
+
+    <TextView
+        android:id="@+id/txtruccliente"
+        android:layout_width="303dp"
+        android:layout_height="33dp"
+        android:gravity="center"
+        android:text="@string/ruc" />
+
+    <TextView
+        android:id="@+id/txtdireccion"
+        android:layout_width="302dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_weight="0.00"
+        android:gravity="center"
+        android:text="@string/vacio" />
+
+    <CheckBox
+        android:id="@+id/checkBox1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Actualizar Todos mis Clientes" />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btnaceptar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.41"
+            android:text="@string/Aceptar" />
+
+        <Button
+            android:id="@+id/btnSalir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.50"
+       
+            android:text="@string/Salir" />
+    </LinearLayout>
+
+</LinearLayout>

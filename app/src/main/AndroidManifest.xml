@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.visitasgps"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/gpsicon3"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="m">
+        <activity android:name="com.visitasgps.Sincronizar" />
+        <activity android:name="com.visitasgps.Sincronizar2" />
+        <activity android:name="com.visitasgps.Imagen" />
+        <activity android:name="com.visitasgps.MainProgress" />
+        <activity
+            android:name="com.visitasgps.OpcionPedidosActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service android:name="com.visitasgps.ServiceTrnasferirVisitas" />
+
+        <activity
+            android:name="com.visitasgps.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.visitasgps.MainActivityAmasoft"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.visitasgps.ActivityActualizarCliente"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.visitasgps.ActivityVisitas"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.visitasgps.ActivityListadoVisitas"
+            android:screenOrientation="landscape" />
+    </application>
+
+</manifest>
