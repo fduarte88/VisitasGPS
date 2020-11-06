@@ -1,32 +1,113 @@
 package com.visitasgps;
 
-// Se eliminar librerías que no se utilizan
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.ProgressBar;
 import android.os.Message;
-import android.util.Log;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.visitasgps.R;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 
 import org.jetbrains.annotations.NotNull;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
+import org.ksoap2.serialization.SoapSerializationEnvelope;
+import org.ksoap2.transport.HttpTransportSE;
+import org.xmlpull.v1.XmlPullParserException;
+
+
+
+// hasta aqui inserte para la pruebas
+
+import android.os.AsyncTask;
+
+////////////////////////////
+//import android.util.Printer;
+import android.R.attr;
+import android.R.integer;
+import android.widget.ArrayAdapter;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+import android.widget.ImageButton;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
-import java.util.Vector;
+
+import android.text.Editable;
+import android.text.format.DateFormat;
+import android.util.Log;
+import android.util.LogPrinter;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
+import android.net.ParseException;
+
+import android.os.Environment;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.Typeface;
+
+import android.view.View;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnKeyListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TabHost;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.TabHost.OnTabChangeListener;
+
+import com.example.visitasgps.R;
 
 public class Sincronizar extends Activity {
 	String Stringcodvendedor= "";
@@ -69,7 +150,6 @@ public class Sincronizar extends Activity {
     }
 
 
-    // Se ignora por completo ésta parte
 	@SuppressLint("HandlerLeak")
 	Handler puente = new Handler() {
 
@@ -88,95 +168,38 @@ public class Sincronizar extends Activity {
 		  }
 		 };
 
+	public void sincronizar_usuarios_thread(){
+		if (!isActivo) {
+			Thread progresoBar = new Thread(new Runnable() {
+				int i;
 
-	// Cambie de nombre y de forma
-	// En vez de trabajar como hilo, trabaja como método
-	public void sincronizarUsuarios(){
-		try {
-			SoapObject request = new SoapObject(namespace, Metodosincronizarusuarios);
-			SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
-			envelope.dotNet = true;
-			envelope.setOutputSoapObject(request);
-			System.out.println(url);
-			HttpTransportSE transporte = new HttpTransportSE(url);
-			try
-			{
-				transporte.call(accionSoapsincronizarusuarios, envelope);
-			}catch(Exception e){
-				System.out.println(e);
-			}
-			SoapObject resultsRequestSOAP = (SoapObject) envelope.bodyIn;
-			Vector vectordeusuarios = (Vector) resultsRequestSOAP.getProperty("return");
-			int count = vectordeusuarios.size();
-
-			UtilidadesSQL sql3 = new UtilidadesSQL(getApplicationContext(),
-					"DBUsuarios", null,versiondb);
-			final SQLiteDatabase db3 = sql3.getWritableDatabase();
-
-			try
-			{
-				db3.execSQL("delete from  Usuarios");
-				db3.execSQL("DROP TABLE IF EXISTS Usuarios");
-			}catch (Exception e){
-				System.out.println(e);
-			}
-
-			try
-			{
-				db3.execSQL("CREATE TABLE Usuarios (_id INTEGER PRIMARY KEY AUTOINCREMENT, desusuario TEXT, passusuario TEXT,codusuario INTEGER,codvendedor INTEGER,codcobrador INTEGER,desvendedor TEXT,descobradror TEXT, usuarioactual INTEGER)");
-			}catch (Exception e){
-				System.out.println(e);
-			}
-			for (int i = 0; i <count; i++)
-			{
-				UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
-						"DBUsuarios", null,versiondb);
-				final SQLiteDatabase db = sql.getWritableDatabase();
-				SoapObject test = (SoapObject) vectordeusuarios.get(i);
-				String Stringdesusuario = (String) test.getProperty("desusuario");
-				String Stringcodusuario = (String) test.getProperty("codusuario");    // se recibe como string
-				String Stringpassusuario = (String) test.getProperty("passusuario");    // se recibe como string
-				String Stringcodvendedor = (String) test.getProperty("codvendedor");    // se recibe como string
-				String Stringdesvendedor = (String) test.getProperty("desvendedor");    // se recibe como string
-				String Stringcodcobrador = (String) test.getProperty("codcobrador");    // se recibe como string
-				String Stringdescobrador = (String) test.getProperty("descobrador");    // se recibe como string
-
-				int codusuario = Integer.parseInt(Stringcodusuario); // se convierte a integer
-				int codvendedor =Integer.parseInt(Stringcodvendedor); // se convierte a integer
-				int codcobrador =Integer.parseInt(Stringcodcobrador); // se convierte a integer
-				if (db != null) {
-					ContentValues nuevoRegistro = new ContentValues();
-					nuevoRegistro.put("desusuario", Stringdesusuario.trim());
-					nuevoRegistro.put("passusuario", Stringpassusuario.trim());
-					nuevoRegistro.put("codusuario", codusuario);
-					nuevoRegistro.put("codvendedor", codvendedor);
-					nuevoRegistro.put("desvendedor", Stringdesvendedor.trim());
-					nuevoRegistro.put("codcobrador", codcobrador);
-					nuevoRegistro.put("descobradror", Stringdescobrador.trim());
-					nuevoRegistro.put("usuarioactual",0);
-
-					try {
-						db.insert("Usuarios", null, nuevoRegistro);
-						pirulito=1;
-						// Se utiliza el registro actual y la cantidad de registro totales para obtener el porcentaje
-						porcentaje= ((i+1)*100/count);
-						// Se asigna el porcentaje a la barra y al texto
-						pb.setProgress(porcentaje);
-						txt.setText(porcentaje+" %");
-						// Se el porcentaje llega a 100 muestra un alerta de confirmación
-						if (porcentaje==100) {
-							Toast.makeText(getApplicationContext(),"Usuarios sincronizados correctamente", Toast.LENGTH_SHORT).show();
-							pb.setVisibility(View.GONE);
+				public void run() {
+					while (i < 100) {
+						i += doWork();
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							progreso = 0;
 						}
-					} catch (Exception e) {
-						System.out.println(e);
+						puente.post(new Runnable() {
+							@Override
+							public void run() {
+								pb.setProgress(i);
+								txt.setText(i+" %");
+
+							}
+						});
 					}
-					db.close();
 				}
-			}
-		} catch (Exception e) {
-			System.out.println(e);
+				private int doWork() {
+					return i * 2;
+				}
+			});
+			progresoBar.start();
 		}
+	MiThread hilo = new MiThread();
+	hilo.start();
 	}
 
 	public void salir(View view){
@@ -189,7 +212,7 @@ public class Sincronizar extends Activity {
 	       .setCancelable(false)
 	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
-				   sincronizarUsuarios();
+	        	   sincronizar_usuarios_thread();
 	           }
 	       })
 	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -201,6 +224,113 @@ public class Sincronizar extends Activity {
 	alert.show();
 }
 
+	class MiThread extends Thread {
+		@Override
+		public void run() {
+			try{
+				//int bbb;
+				//bbb=20;
+				//Message msg2 = new Message();
+				//msg2.obj = bbb;
+				//puente.sendMessage(msg2);
+
+				SoapObject request = new SoapObject(namespace, Metodosincronizarusuarios);
+				SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
+				envelope.dotNet = true;
+				envelope.setOutputSoapObject(request);
+				System.out.println(url);
+				HttpTransportSE transporte = new HttpTransportSE(url);
+				try
+				{
+					transporte.call(accionSoapsincronizarusuarios, envelope);
+				}catch(Exception e){
+					System.out.println(e);
+					//int aa = -99;
+					//Message msg = new Message();
+					//msg.obj = aa;
+					//puente.sendMessage(msg);
+				}
+				SoapObject resultsRequestSOAP = (SoapObject) envelope.bodyIn;
+				Vector vectordeusuarios = (Vector) resultsRequestSOAP.getProperty("return");
+				int count = vectordeusuarios.size();
+
+				UtilidadesSQL sql3 = new UtilidadesSQL(getApplicationContext(),
+						"DBUsuarios", null,versiondb);
+				final SQLiteDatabase db3 = sql3.getWritableDatabase();
+
+				try
+				{
+					db3.execSQL("delete from  Usuarios");
+					db3.execSQL("DROP TABLE IF EXISTS Usuarios");
+				}catch (Exception e){
+					//int aa = -99;
+					//Message msg = new Message();
+					//msg.obj = aa;
+					//puente.sendMessage(msg);
+				}
+
+				try
+				{
+					db3.execSQL("CREATE TABLE Usuarios (_id INTEGER PRIMARY KEY AUTOINCREMENT, desusuario TEXT, passusuario TEXT,codusuario INTEGER,codvendedor INTEGER,codcobrador INTEGER,desvendedor TEXT,descobradror TEXT, usuarioactual INTEGER)");
+				}catch (Exception e){
+					//int aa = -99;
+					//Message msg = new Message();
+					//msg.obj = aa;
+					//puente.sendMessage(msg);
+				}
+				for (int i = 0; i <count; i++)
+				{
+					UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
+							"DBUsuarios", null,versiondb);
+					final SQLiteDatabase db = sql.getWritableDatabase();
+					SoapObject test = (SoapObject) vectordeusuarios.get(i);
+					String Stringdesusuario = (String) test.getProperty("desusuario");
+					String Stringcodusuario = (String) test.getProperty("codusuario");    // se recibe como string
+					String Stringpassusuario = (String) test.getProperty("passusuario");    // se recibe como string
+					String Stringcodvendedor = (String) test.getProperty("codvendedor");    // se recibe como string
+					String Stringdesvendedor = (String) test.getProperty("desvendedor");    // se recibe como string
+					String Stringcodcobrador = (String) test.getProperty("codcobrador");    // se recibe como string
+					String Stringdescobrador = (String) test.getProperty("descobrador");    // se recibe como string
+
+					int codusuario = Integer.parseInt(Stringcodusuario); // se convierte a integer
+					int codvendedor =Integer.parseInt(Stringcodvendedor); // se convierte a integer
+					int codcobrador =Integer.parseInt(Stringcodcobrador); // se convierte a integer
+					if (db != null) {
+						ContentValues nuevoRegistro = new ContentValues();
+						nuevoRegistro.put("desusuario", Stringdesusuario.trim());
+						nuevoRegistro.put("passusuario", Stringpassusuario.trim());
+						nuevoRegistro.put("codusuario", codusuario);
+						nuevoRegistro.put("codvendedor", codvendedor);
+						nuevoRegistro.put("desvendedor", Stringdesvendedor.trim());
+						nuevoRegistro.put("codcobrador", codcobrador);
+						nuevoRegistro.put("descobradror", Stringdescobrador.trim());
+						nuevoRegistro.put("usuarioactual",0);
+
+						try {
+							db.insert("Usuarios", null, nuevoRegistro);
+							pirulito=1;
+						} catch (Exception e) {
+							//int aa = -99;
+							//Message msg = new Message();
+							//msg.obj = aa;
+							//puente.sendMessage(msg);
+						}
+						db.close();
+					}
+				}
+				for(int a=10;a<100;a++){
+					Message msg = new Message();
+					msg.obj = a;
+					//puente.sendMessage(msg);
+				}
+			} catch (Exception e) {
+				int aa = -99;
+				Message msg = new Message();
+				msg.obj = aa;
+				//puente.sendMessage(msg);
+			}
+		}
+	}
 
 class Mihilobancos extends Thread {
 	  public void run() {
