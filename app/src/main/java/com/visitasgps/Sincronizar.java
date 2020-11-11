@@ -149,7 +149,7 @@ public class Sincronizar extends Activity {
 	// class MiThread extends Thread {
 	// 	@Override
 	// 	public void run() {
-	sincronizar_usuarios() {}
+	public void sincronizar_usuarios() {}
 		try {
 			SoapObject request = new SoapObject(namespace, Metodosincronizarusuarios);
 			SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
