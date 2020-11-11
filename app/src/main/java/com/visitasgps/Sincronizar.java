@@ -55,7 +55,6 @@ public class Sincronizar extends Activity {
 	private static final String accionSoapNumerosRecibos = "http://mail.amanecer.com.py/lservicios.php/MetodobuscarNumerosRecibos";
 
 	public int versiondb=1;
-	public int pirulito=0;
 	private   ProgressDialog progressDialog ;
 	ProgressBar pb;
 	TextView txt;
@@ -92,65 +91,33 @@ public class Sincronizar extends Activity {
 		  }
 		 };
 
-	public void sincronizar_usuarios_thread(){
-
-			Thread progresoBar = new Thread(new Runnable() {
-				public void run() {
-					for (i=0; i < 100; i++)
-					{
-						progreso += doWork();
-						try {
-							Thread.sleep(50);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-							progreso = 0;
-						}
-						puente.post(new Runnable() {
-							@Override
-							public void run() {
-								pb.setProgress(i);
-								txt.setText(i + " %");
-							}
-						});
-						//progreso = 100;
-						}
-				}
-				private int doWork() {
-					return i * 3;
-				}
-			});
-			progresoBar.start();
-	MiThread hilo = new MiThread();
-	hilo.start();
+	public void salir(View view){
+		finish();
 	}
 
-	public void salir(View view){
-	finish();
-}
+	public void SincronizarUsuarios(View view) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Â¿Iniciar sincronizaciÃ³n de Usuarios?")
+			.setCancelable(false)
+			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					new sincronizar_usuarios().start();
+				}
+			})
+			.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+				}
+			});
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
 
-	public void SincronizarUsuarios(View view){
-	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	builder.setMessage("iniciar sincronización de Usuarios?")
-	       .setCancelable(false)
-	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-	           public void onClick(DialogInterface dialog, int id) {
-	        	   sincronizar_usuarios_thread();
-	           }
-	       })
-	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-	           public void onClick(DialogInterface dialog, int id) {
-	                dialog.cancel();
-	           }
-	       });
-	AlertDialog alert = builder.create();
-	alert.show();
-}
-
-	class MiThread extends Thread {
-		@Override
-		public void run() {
-			try{
-
+	// ConexiÃ³n HTTP, android solo permite a travÃ©s de hilos
+	 class sincronizar_usuarios extends Thread {
+	 	@Override
+	 	public void run() {
+			try {
 				SoapObject request = new SoapObject(namespace, Metodosincronizarusuarios);
 				SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
 				envelope.dotNet = true;
@@ -161,14 +128,14 @@ public class Sincronizar extends Activity {
 				{
 					transporte.call(accionSoapsincronizarusuarios, envelope);
 				}catch(Exception e){
-					System.out.println(e);
+					System.out.println("Error al llamar al web service: " + e);
 					progreso = 99;
 					Message msg = new Message();
 					puente.sendMessage(msg);
 				}
 				SoapObject resultsRequestSOAP = (SoapObject) envelope.bodyIn;
 				Vector vectordeusuarios = (Vector) resultsRequestSOAP.getProperty("return");
-				int count = vectordeusuarios.size();
+				int count = vectordeusuarios.size(); // Cantidad de registros
 
 				UtilidadesSQL sql3 = new UtilidadesSQL(getApplicationContext(),
 						"DBUsuarios", null,versiondb);
@@ -223,7 +190,11 @@ public class Sincronizar extends Activity {
 
 						try {
 							db.insert("Usuarios", null, nuevoRegistro);
-							pirulito=1;
+							// Se obtiene el porcentaje y se actualiza la barra por cada registro
+							int porcentaje= (i+1)*100/count;
+							pb.setProgress(porcentaje);
+							txt.setText(porcentaje + " %");
+							Thread.sleep(30);
 						} catch (Exception e) {
 							progreso = 99;
 							Message msg = new Message();
@@ -242,9 +213,9 @@ public class Sincronizar extends Activity {
 				puente.sendMessage(msg);
 			}
 		}
-	}
+	 }
 
-class Mihilobancos extends Thread {
+	class Mihilobancos extends Thread {
 	  public void run() {
 
 		  try{
@@ -852,7 +823,7 @@ class Mihiloproductos extends Thread{
 
 		    		 }catch (Exception e){
 			 			 ///   Toast.makeText(getApplicationContext(),
-			 	    		//		"NO PÙDO LEER", Toast.LENGTH_LONG)
+			 	    		//		"NO Pï¿½DO LEER", Toast.LENGTH_LONG)
 			 	    		//		.show();
 			 		 }
 
@@ -1094,321 +1065,7 @@ public void sincronizar_clientes_thread(){
      Mihiloclientes hiloclientes = new Mihiloclientes();
      hiloclientes.start();
 }
-public void sincronizar_usuarios(){
 
-	 try{
-
-
-   	 SoapObject request = new SoapObject(namespace, Metodosincronizarusuarios);
-   	 SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
-   	 envelope.dotNet = true;
-   	 envelope.setOutputSoapObject(request);
-   	 HttpTransportSE transporte = new HttpTransportSE(url);
-   	 try
-   	 {
-   	 transporte.call(accionSoapsincronizarusuarios, envelope);
-   	 }catch(Exception e){
-   		Toast.makeText(getApplicationContext(),
-				"Error de Conexion, vuelva a intentarlo", Toast.LENGTH_LONG).show();
-		e.printStackTrace();
-   	 }
-
-	 SoapObject resultsRequestSOAP = (SoapObject) envelope.bodyIn;
-   	 Vector vectordeusuarios = (Vector) resultsRequestSOAP.getProperty("return");
-   	 int count = vectordeusuarios.size();
-   	 Toast.makeText(getApplicationContext(),
-					"total="+count, Toast.LENGTH_LONG).show();
-   	 UtilidadesSQL sql3 = new UtilidadesSQL(getApplicationContext(),
-					"DBUsuarios", null,versiondb);
-			final SQLiteDatabase db3 = sql3.getWritableDatabase();
-
-			try
-			{
-				db3.execSQL("delete from  Usuarios");
-				db3.execSQL("DROP TABLE IF EXISTS Usuarios");
-
-			}catch (Exception e){
-
-				Toast.makeText(getApplicationContext(),
-						"no pude borrar", Toast.LENGTH_LONG).show();
-				e.printStackTrace();
-			}
-
-			try
-			{
-			db3.execSQL("CREATE TABLE Usuarios (_id INTEGER PRIMARY KEY AUTOINCREMENT, desusuario TEXT, passusuario TEXT,codusuario INTEGER,codvendedor INTEGER,codcobrador INTEGER,desvendedor TEXT,descobradror TEXT)");
-			}catch (Exception e){
-
-				Toast.makeText(getApplicationContext(),
-						"no pude crear", Toast.LENGTH_LONG).show();
-				e.printStackTrace();
-			}
-			for (int i = 0; i <count; i++)
-   	 {
-   		      	 UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
-  					"DBUsuarios", null,versiondb);
-  			final SQLiteDatabase db = sql.getWritableDatabase();
-  			SoapObject test = (SoapObject) vectordeusuarios.get(i);
-   		 String Stringdesusuario = (String) test.getProperty("desusuario");
-   		 String Stringcodusuario = (String) test.getProperty("codusuario");    // se recibe como string
-   		 String Stringpassusuario = (String) test.getProperty("passusuario");    // se recibe como string
-   		 String Stringcodvendedor = (String) test.getProperty("codvendedor");    // se recibe como string
-
-
-   		 String Stringdesvendedor = (String) test.getProperty("desvendedor");    // se recibe como string
-   		 String Stringcodcobrador = (String) test.getProperty("codcobrador");    // se recibe como string
-   		 String Stringdescobrador = (String) test.getProperty("descobrador");    // se recibe como string
-
-
-
-   		 int codusuario = Integer.parseInt(Stringcodusuario); // se convierte a integer
-   		 int codvendedor =Integer.parseInt(Stringcodvendedor); // se convierte a integer
-   		 int codcobrador =Integer.parseInt(Stringcodcobrador); // se convierte a integer
-				if (db != null) {
-					ContentValues nuevoRegistro = new ContentValues();
-					nuevoRegistro.put("desusuario", Stringdesusuario.trim());
-					nuevoRegistro.put("passusuario", Stringpassusuario.trim());
-					nuevoRegistro.put("codusuario", codusuario);
-					nuevoRegistro.put("codvendedor", codvendedor);
-					nuevoRegistro.put("desvendedor", Stringdesvendedor.trim());
-					nuevoRegistro.put("codcobrador", codcobrador);
-					nuevoRegistro.put("descobradror", Stringdescobrador.trim());
-
-
-					try {
-						db.insert("Usuarios", null, nuevoRegistro);
-						} catch (Exception e) {
-						Toast.makeText(getApplicationContext(),
-								"Error al Insertar"+e.getMessage(), Toast.LENGTH_LONG).show();
-						e.printStackTrace();
-					}
-					db.close();
-				}
-
-   	 	}
-
-   	 			Toast.makeText(getApplicationContext(),
-   				"Tabla de Usuarios Sincronizada con ="+count+"usuarios", Toast.LENGTH_LONG)
-   				.show();
-
-
-
-	   } catch (Exception e) {
-
-
-		 Toast.makeText(getApplicationContext(),
-   				"Ocurrio un error inesperado ", Toast.LENGTH_LONG)
-   				.show();
-	 }
-
-
-}
-public void sincronizar_usuarios_original(){
-			 try{
-
-	    	 SoapObject request = new SoapObject(namespace, Metodosincronizarusuarios);
-	    	 SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
-	    	 envelope.dotNet = true;
-	    	 envelope.setOutputSoapObject(request);
-
-
-
-
-	    	 HttpTransportSE transporte = new HttpTransportSE(url);
-	    	 transporte.call(accionSoapsincronizarusuarios, envelope);
-
-	 	 	 SoapObject resultsRequestSOAP = (SoapObject) envelope.bodyIn;
-	    	 Vector vectordeusuarios = (Vector) resultsRequestSOAP.getProperty("return");
-	    	 int count = vectordeusuarios.size();
-	    	 Toast.makeText(getApplicationContext(),
-						"total="+count, Toast.LENGTH_LONG).show();
-	    	 UtilidadesSQL sql3 = new UtilidadesSQL(getApplicationContext(),
-						"DBUsuarios", null,versiondb);
-				final SQLiteDatabase db3 = sql3.getWritableDatabase();
-
-				try
-				{
-					db3.execSQL("delete from  Usuarios");
-					db3.execSQL("DROP TABLE IF EXISTS Usuarios");
-
-				}catch (Exception e){
-
-					Toast.makeText(getApplicationContext(),
-							"no pude borrar", Toast.LENGTH_LONG).show();
-					e.printStackTrace();
-				}
-
-				try
-				{
-				db3.execSQL("CREATE TABLE Usuarios (_id INTEGER PRIMARY KEY AUTOINCREMENT, desusuario TEXT, passusuario TEXT,codusuario INTEGER,codvendedor INTEGER,codcobrador INTEGER,desvendedor TEXT,descobradror TEXT)");
-				}catch (Exception e){
-
-					Toast.makeText(getApplicationContext(),
-							"no pude crear", Toast.LENGTH_LONG).show();
-					e.printStackTrace();
-				}
-				for (int i = 0; i <count; i++)
-	    	 {
-	    		      	 UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
-	   					"DBUsuarios", null,versiondb);
-	   			final SQLiteDatabase db = sql.getWritableDatabase();
-	   			SoapObject test = (SoapObject) vectordeusuarios.get(i);
-	    		 String Stringdesusuario = (String) test.getProperty("desusuario");
-	    		 String Stringcodusuario = (String) test.getProperty("codusuario");    // se recibe como string
-	    		 String Stringpassusuario = (String) test.getProperty("passusuario");    // se recibe como string
-	    		 String Stringcodvendedor = (String) test.getProperty("codvendedor");    // se recibe como string
-
-
-	    		 String Stringdesvendedor = (String) test.getProperty("desvendedor");    // se recibe como string
-	    		 String Stringcodcobrador = (String) test.getProperty("codcobrador");    // se recibe como string
-	    		 String Stringdescobrador = (String) test.getProperty("descobrador");    // se recibe como string
-
-
-
-	    		 int codusuario = Integer.parseInt(Stringcodusuario); // se convierte a integer
-	    		 int codvendedor =Integer.parseInt(Stringcodvendedor); // se convierte a integer
-	    		 int codcobrador =Integer.parseInt(Stringcodcobrador); // se convierte a integer
-					if (db != null) {
-						ContentValues nuevoRegistro = new ContentValues();
-						nuevoRegistro.put("desusuario", Stringdesusuario.trim());
-						nuevoRegistro.put("passusuario", Stringpassusuario.trim());
-						nuevoRegistro.put("codusuario", codusuario);
-						nuevoRegistro.put("codvendedor", codvendedor);
-						nuevoRegistro.put("desvendedor", Stringdesvendedor.trim());
-						nuevoRegistro.put("codcobrador", codcobrador);
-						nuevoRegistro.put("descobradror", Stringdescobrador.trim());
-
-
-						try {
-							db.insert("Usuarios", null, nuevoRegistro);
-							} catch (Exception e) {
-							Toast.makeText(getApplicationContext(),
-									"Error al Insertar"+e.getMessage(), Toast.LENGTH_LONG).show();
-							e.printStackTrace();
-						}
-						db.close();
-					}
-
-	    	 	}
-
-	    	 			Toast.makeText(getApplicationContext(),
-	    				"Tabla de Usuarios Sincronizada con ="+count+"usuarios", Toast.LENGTH_LONG)
-	    				.show();
-
-
-
-		 } catch (Exception e) {
-
-
-			 Toast.makeText(getApplicationContext(),
-	    				"Ocurrio un error inesperado ", Toast.LENGTH_LONG)
-	    				.show();
-		 }
-
-
-}
-/*respaldo de sincronizar usuarios
-	 try{
-    	 SoapObject request = new SoapObject(namespace, Metodosincronizarusuarios);
-    	 SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
-    	 envelope.dotNet = true;
-    	 envelope.setOutputSoapObject(request);
-    	 HttpTransportSE transporte = new HttpTransportSE(url);
-    	 transporte.call(accionSoapsincronizarusuarios, envelope);
-  		 Toast.makeText(getApplicationContext(),
-					"despues aqui", Toast.LENGTH_LONG).show();
- 	 	 SoapObject resultsRequestSOAP = (SoapObject) envelope.bodyIn;
-    	 Vector vectordeusuarios = (Vector) resultsRequestSOAP.getProperty("return");
-    	 int count = vectordeusuarios.size();
-    	 Toast.makeText(getApplicationContext(),
-					"total="+count, Toast.LENGTH_LONG).show();
-    	 UtilidadesSQL sql3 = new UtilidadesSQL(getApplicationContext(),
-					"DBUsuarios", null,versiondb);
-			final SQLiteDatabase db3 = sql3.getWritableDatabase();
-
-			try
-			{
-				db3.execSQL("delete from  Usuarios");
-				db3.execSQL("DROP TABLE IF EXISTS Usuarios");
-
-			}catch (Exception e){
-
-				Toast.makeText(getApplicationContext(),
-						"no pude borrar", Toast.LENGTH_LONG).show();
-				e.printStackTrace();
-			}
-
-			try
-			{
-			db3.execSQL("CREATE TABLE Usuarios (_id INTEGER PRIMARY KEY AUTOINCREMENT, desusuario TEXT, passusuario TEXT,codusuario INTEGER,codvendedor INTEGER,codcobrador INTEGER,desvendedor TEXT,descobradror TEXT)");
-			Toast.makeText(getApplicationContext(),
-					"ya cree la tabla de usuarios", Toast.LENGTH_LONG).show();
-
-
-			}catch (Exception e){
-
-				Toast.makeText(getApplicationContext(),
-						"no pude crear", Toast.LENGTH_LONG).show();
-				e.printStackTrace();
-			}
-			for (int i = 0; i <count; i++)
-    	 {
-    		      	 UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
-   					"DBUsuarios", null,versiondb);
-   			final SQLiteDatabase db = sql.getWritableDatabase();
-   			SoapObject test = (SoapObject) vectordeusuarios.get(i);
-    		 String Stringdesusuario = (String) test.getProperty("desusuario");
-    		 String Stringcodusuario = (String) test.getProperty("codusuario");    // se recibe como string
-    		 String Stringpassusuario = (String) test.getProperty("passusuario");    // se recibe como string
-    		 String Stringcodvendedor = (String) test.getProperty("codvendedor");    // se recibe como string
-
-
-    		 String Stringdesvendedor = (String) test.getProperty("desvendedor");    // se recibe como string
-    		 String Stringcodcobrador = (String) test.getProperty("codcobrador");    // se recibe como string
-    		 String Stringdescobrador = (String) test.getProperty("descobrador");    // se recibe como string
-
-
-
-    		 int codusuario = Integer.parseInt(Stringcodusuario); // se convierte a integer
-    		 int codvendedor =Integer.parseInt(Stringcodvendedor); // se convierte a integer
-    		 int codcobrador =Integer.parseInt(Stringcodcobrador); // se convierte a integer
-				if (db != null) {
-					ContentValues nuevoRegistro = new ContentValues();
-					nuevoRegistro.put("desusuario", Stringdesusuario.trim());
-					nuevoRegistro.put("passusuario", Stringpassusuario.trim());
-					nuevoRegistro.put("codusuario", codusuario);
-					nuevoRegistro.put("codvendedor", codvendedor);
-					nuevoRegistro.put("desvendedor", Stringdesvendedor.trim());
-					nuevoRegistro.put("codcobrador", codcobrador);
-					nuevoRegistro.put("descobradror", Stringdescobrador.trim());
-
-
-
-
-
-					try {
-						db.insert("Usuarios", null, nuevoRegistro);
-						} catch (Exception e) {
-						Toast.makeText(getApplicationContext(),
-								"Error al Insertar"+e.getMessage(), Toast.LENGTH_LONG).show();
-						e.printStackTrace();
-					}
-					db.close();
-				}
-
-    	 	}
-
-    	 			Toast.makeText(getApplicationContext(),
-    				"Tabla de Usuarios Sincronizada con ="+count+"usuarios", Toast.LENGTH_LONG)
-    				.show();
-
-     	} catch (Exception e) {
-	         Toast.makeText(getApplicationContext(),
-			"Error de conexion1 "+e.getMessage() , Toast.LENGTH_LONG)
-			.show();
-    	}
-
-	 */
 public void SincronizarBancos(View view){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Desea Sincronizar los Bancos en el Sistema?")
@@ -2136,7 +1793,7 @@ public void ReimprimirCobranzas(View view){
 							final SQLiteDatabase db = sql.getWritableDatabase();
 							db.execSQL("update Visitas   set  transferido=0");
 							Toast.makeText(getApplicationContext(),
-									"El Recibo Nº Fue Anulado", Toast.LENGTH_LONG)
+									"El Recibo Nï¿½ Fue Anulado", Toast.LENGTH_LONG)
 									.show();
 	           }catch(Exception e ){
 	   			Toast.makeText(getApplicationContext(),
@@ -2227,7 +1884,7 @@ public void sincronizar_presupuestos(){
 									final SQLiteDatabase db = sql.getWritableDatabase();
 									db.execSQL("update Pedidos  set  codcliente=4298, numcliente=4358 ,nombre='LAS MERCEDES' where  idpedido=687");
 									Toast.makeText(getApplicationContext(),
-											"El Recibo Nº Fue Anulado", Toast.LENGTH_LONG)
+											"El Recibo Nï¿½ Fue Anulado", Toast.LENGTH_LONG)
 											.show();
 			           }catch(Exception e ){
 			   			Toast.makeText(getApplicationContext(),
@@ -2293,7 +1950,7 @@ public void sincronizar_presupuestos(){
 
 		    		 }catch (Exception e){
 			 			    Toast.makeText(getApplicationContext(),
-			 	    				"NO PÙDO LEER", Toast.LENGTH_LONG)
+			 	    				"NO Pï¿½DO LEER", Toast.LENGTH_LONG)
 			 	    				.show();
 			 		 }
 
