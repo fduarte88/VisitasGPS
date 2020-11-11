@@ -1,113 +1,34 @@
 package com.visitasgps;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.ProgressBar;
 import android.os.Message;
-import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.visitasgps.R;
 
 import org.jetbrains.annotations.NotNull;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
-import org.xmlpull.v1.XmlPullParserException;
 
-
+import java.util.Vector;
 
 // hasta aqui inserte para la pruebas
-
-import android.os.AsyncTask;
-
 ////////////////////////////
 //import android.util.Printer;
-import android.R.attr;
-import android.R.integer;
-import android.widget.ArrayAdapter;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.EditText;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
-import android.widget.ImageButton;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapPrimitive;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
-
-
-import android.text.Editable;
-import android.text.format.DateFormat;
-import android.util.Log;
-import android.util.LogPrinter;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
-import android.net.ParseException;
-
-import android.os.Environment;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.View;
-import android.widget.Button;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.Typeface;
-
-import android.view.View;
-import android.view.View.OnFocusChangeListener;
-import android.view.View.OnKeyListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.TabHost;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.TabHost.OnTabChangeListener;
-
-import com.example.visitasgps.R;
 
 public class Sincronizar extends Activity {
 	String Stringcodvendedor= "";
@@ -139,6 +60,7 @@ public class Sincronizar extends Activity {
 	ProgressBar pb;
 	TextView txt;
 	int progreso = 0;
+	int i =0;
 	Boolean isActivo = false;
 	//Handler puente = new Handler();
 
@@ -154,30 +76,31 @@ public class Sincronizar extends Activity {
 	Handler puente = new Handler() {
 
 		  public void handleMessage(@NotNull Message msg) {
-		  	pb.setProgress((Integer)msg.obj);
-		   if (progreso >= 100){
+		  	//msg.obj = progreso;
+		  	//pb.setProgress(progreso);
+		   if (progreso==100){
 			   Toast.makeText(getApplicationContext(),
 		    			"Sincronizado Correctamente ", Toast.LENGTH_SHORT).show();
-			           msg.obj=100;
-		      			pb.setVisibility(View.GONE);
+		      			//pb.setVisibility(View.GONE);
 		    }else{
 			   Toast.makeText(getApplicationContext(),
-			   "Error de Conexion", Toast.LENGTH_SHORT).show();
+			   "Error de Conexion, vuelva a intentarlo!", Toast.LENGTH_SHORT).show();
 			   pb.setVisibility(View.GONE);
+			   txt.setText(0+" % realizado!");
+
 		   }
 		  }
 		 };
 
 	public void sincronizar_usuarios_thread(){
-		if (!isActivo) {
-			Thread progresoBar = new Thread(new Runnable() {
-				int i;
 
+			Thread progresoBar = new Thread(new Runnable() {
 				public void run() {
-					while (i < 100) {
-						i += doWork();
+					for (i=0; i < 100; i++)
+					{
+						progreso += doWork();
 						try {
-							Thread.sleep(100);
+							Thread.sleep(50);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 							progreso = 0;
@@ -186,18 +109,17 @@ public class Sincronizar extends Activity {
 							@Override
 							public void run() {
 								pb.setProgress(i);
-								txt.setText(i+" %");
-
+								txt.setText(i + " %");
 							}
 						});
-					}
+						//progreso = 100;
+						}
 				}
 				private int doWork() {
-					return i * 2;
+					return i * 3;
 				}
 			});
 			progresoBar.start();
-		}
 	MiThread hilo = new MiThread();
 	hilo.start();
 	}
@@ -228,11 +150,6 @@ public class Sincronizar extends Activity {
 		@Override
 		public void run() {
 			try{
-				//int bbb;
-				//bbb=20;
-				//Message msg2 = new Message();
-				//msg2.obj = bbb;
-				//puente.sendMessage(msg2);
 
 				SoapObject request = new SoapObject(namespace, Metodosincronizarusuarios);
 				SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
@@ -245,10 +162,9 @@ public class Sincronizar extends Activity {
 					transporte.call(accionSoapsincronizarusuarios, envelope);
 				}catch(Exception e){
 					System.out.println(e);
-					//int aa = -99;
-					//Message msg = new Message();
-					//msg.obj = aa;
-					//puente.sendMessage(msg);
+					progreso = 99;
+					Message msg = new Message();
+					puente.sendMessage(msg);
 				}
 				SoapObject resultsRequestSOAP = (SoapObject) envelope.bodyIn;
 				Vector vectordeusuarios = (Vector) resultsRequestSOAP.getProperty("return");
@@ -263,10 +179,9 @@ public class Sincronizar extends Activity {
 					db3.execSQL("delete from  Usuarios");
 					db3.execSQL("DROP TABLE IF EXISTS Usuarios");
 				}catch (Exception e){
-					//int aa = -99;
-					//Message msg = new Message();
-					//msg.obj = aa;
-					//puente.sendMessage(msg);
+					progreso = 99;
+					Message msg = new Message();
+					puente.sendMessage(msg);
 				}
 
 				try
@@ -310,37 +225,27 @@ public class Sincronizar extends Activity {
 							db.insert("Usuarios", null, nuevoRegistro);
 							pirulito=1;
 						} catch (Exception e) {
-							//int aa = -99;
-							//Message msg = new Message();
-							//msg.obj = aa;
-							//puente.sendMessage(msg);
+							progreso = 99;
+							Message msg = new Message();
+							puente.sendMessage(msg);
 						}
 						db.close();
 					}
 				}
-				for(int a=10;a<100;a++){
-					Message msg = new Message();
-					msg.obj = a;
-					//puente.sendMessage(msg);
-				}
-			} catch (Exception e) {
-				int aa = -99;
+				progreso=100;
 				Message msg = new Message();
-				msg.obj = aa;
-				//puente.sendMessage(msg);
+				puente.sendMessage(msg);
+
+			} catch (Exception e) {
+				progreso = 99;
+				Message msg = new Message();
+				puente.sendMessage(msg);
 			}
 		}
 	}
 
 class Mihilobancos extends Thread {
 	  public void run() {
-
-
-	      int bbb;
-          bbb=20;
-          Message msg2 = new Message();
-          msg2.obj = bbb;
-          puente.sendMessage(msg2);
 
 		  try{
 				UtilidadesSQL sql33 = new UtilidadesSQL(getApplicationContext(),
@@ -349,8 +254,8 @@ class Mihilobancos extends Thread {
 				db33.execSQL("DROP TABLE IF EXISTS Bancos");
 				db33.execSQL("CREATE TABLE Bancos (_id INTEGER PRIMARY KEY AUTOINCREMENT, desbanco TEXT, codbanco INTEGER)");
 				}catch(Exception e){
-						//Toast.makeText(getApplicationContext(),
-					//	"Error al crear la tabla de bancos", Toast.LENGTH_SHORT).show();					e.printStackTrace();
+						System.out.println(e);
+						e.printStackTrace();
 				}
 
 			try{
@@ -384,9 +289,8 @@ class Mihilobancos extends Thread {
 							try {
 								db.insert("Bancos", null, nuevoRegistro);
 							} catch (Exception e) {
-							//	Toast.makeText(getApplicationContext(),
-								//		"Error al Insertar", Toast.LENGTH_SHORT).show();
-								//e.printStackTrace();
+								System.out.println(e);
+								e.printStackTrace();
 							}
 							db.close();
 						}
@@ -417,10 +321,9 @@ class Mihilobancos extends Thread {
 			        }
 			}catch (Exception e){
 
-		         int aa = -99;
-		         Message msg = new Message();
-		         msg.obj = aa;
-		         puente.sendMessage(msg);
+				progreso = 99;
+				Message msg = new Message();
+				puente.sendMessage(msg);
 			}
 	  }
 
@@ -1122,13 +1025,34 @@ class mihilocobranzas extends Thread{
 
 
 public void sincronizar_bancos_thread(){
-	 progressDialog = new ProgressDialog(Sincronizar.this);
-     progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-     progressDialog.setMessage("Sincronizando...");
-     progressDialog.setMax(100);
-     progressDialog.setProgress(10);
-     progressDialog.setCancelable(false);
-     progressDialog.show();
+	Thread progresoBar = new Thread(new Runnable() {
+		public void run() {
+			for (i=0; i < 100; i++)
+			{
+				progreso += doWork();
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					progreso = 0;
+				}
+				puente.post(new Runnable() {
+					@Override
+					public void run() {
+						pb.setProgress(i);
+						txt.setText(i + " %");
+					}
+				});
+				//progreso = 100;
+			}
+		}
+		private int doWork() {
+			return i * 5;
+		}
+	});
+	progresoBar.start();
+
+
      Mihilobancos hilobanco = new Mihilobancos();
      hilobanco.start();
 }
