@@ -41,19 +41,7 @@
         android:onClick="SincronizarProductos"
         android:text="@string/sincronizarproductos" />
 
-    <Button
-        android:id="@+id/Button01"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="SincronizarSolicitudes"
-        android:text="@string/Solicitudes" />
 
-    <Button
-        android:id="@+id/button44"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="SincronizarTipoSolicitudes"
-        android:text="@string/tiposolicitud" />
 
     <Button
         android:id="@+id/Button303"
@@ -128,5 +116,19 @@
         android:layout_height="wrap_content"
         android:text="0 %" />
 
+    <Button
+        android:id="@+id/Button01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible" />
+    //android:onClick="SincronizarSolicitudes"
+    android:text="@string/Solicitudes" />
 
+    <Button
+        android:id="@+id/button44"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible" />
+    //android:onClick="SincronizarTipoSolicitudes"
+    android:text="@string/tiposolicitud" />
 </LinearLayout>

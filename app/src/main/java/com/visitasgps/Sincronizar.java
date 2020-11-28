@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,7 +30,7 @@ import java.util.Vector;
 //import android.util.Printer;
 
 public class Sincronizar extends Activity {
-	String Stringcodvendedor= "";
+	String Stringcodvendedor = "";
 
 	private final static String ETIQUETA_ERROR = "ERROR";
 	private static final String namespace = "http://mail.amanecer.com.py/lservicios";
@@ -43,91 +42,91 @@ public class Sincronizar extends Activity {
 	private static final String accionSoapFiltrarClientesObras = "http://mail.amanecer.com.py/lservicios.php/verificarcliente3obras";
 	private static final String Metodosincronizarproductos = "Metodosincronizarproductos";
 	private static final String accionSoapsincronizarproductos = "http://mail.amanecer.com.py/lservicios.php/Metodosincronizarproductos";
-	private static final String Metodosincronizarsafiliados="Metodosincronizarsafiliados";
-	private static final String accionSoapsincronizarafiliados="http://mail.amanecer.com.py/lservicios.php/Metodosincronizarsafiliados";
+	private static final String Metodosincronizarsafiliados = "Metodosincronizarsafiliados";
+	private static final String accionSoapsincronizarafiliados = "http://mail.amanecer.com.py/lservicios.php/Metodosincronizarsafiliados";
 	private static final String consultabancos = "consultabancos";
 	private static final String accionSoapconsultabancos = "http://mail.amanecer.com.py/lservicios.php/consultabancos";
 	private static final String MetodobuscarFormas = "consultaformas";
 	private static final String accionSoapFormas = "http://mail.amanecer.com.py/lservicios.php/consultaformas";
 	private static final String MetodobuscarTipoSolicitud = "consultatiposolicitud";
-	private static final String accionSoapTipoSolicitud  = "http://mail.amanecer.com.py/lservicios.php/consultatiposolicitud";
+	private static final String accionSoapTipoSolicitud = "http://mail.amanecer.com.py/lservicios.php/consultatiposolicitud";
 	private static final String MetodobuscarNumerosRecibos = "MetodobuscarNumerosRecibos";
 	private static final String accionSoapNumerosRecibos = "http://mail.amanecer.com.py/lservicios.php/MetodobuscarNumerosRecibos";
 
-	public int versiondb=1;
-	private   ProgressDialog progressDialog ;
+	public int versiondb = 1;
+	private ProgressDialog progressDialog;
 	ProgressBar pb;
 	TextView txt;
 	int progreso = 0;
-	int i =0;
+	int i = 0;
 	Boolean isActivo = false;
 	//Handler puente = new Handler();
 
 	public void onCreate(Bundle savedInstanceState) {
-    	super.onCreate(savedInstanceState);
-        setContentView(R.layout.sincronizar);
-        pb=(ProgressBar)findViewById(R.id.progressBar);
-        txt = (TextView)findViewById(R.id.porcentaje);
-    }
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.sincronizar);
+		pb = (ProgressBar) findViewById(R.id.progressBar);
+		txt = (TextView) findViewById(R.id.porcentaje);
+	}
 
 
 	@SuppressLint("HandlerLeak")
 	Handler puente = new Handler() {
 
-		  public void handleMessage(@NotNull Message msg) {
-		  	//msg.obj = progreso;
-		  	//pb.setProgress(progreso);
-		   if (progreso==100){
-			   Toast.makeText(getApplicationContext(),
-		    			"Sincronizado Correctamente ", Toast.LENGTH_SHORT).show();
-		      			//pb.setVisibility(View.GONE);
-		    }else{
-			   Toast.makeText(getApplicationContext(),
-			   "Error de Conexion, vuelva a intentarlo!", Toast.LENGTH_SHORT).show();
-			   pb.setVisibility(View.GONE);
-			   txt.setText(0+" % realizado!");
+		public void handleMessage(@NotNull Message msg) {
+			//msg.obj = progreso;
+			//pb.setProgress(progreso);
+			if (progreso == 100) {
+				Toast.makeText(getApplicationContext(),
+						"Sincronizado Correctamente ", Toast.LENGTH_SHORT).show();
+				txt.setText("Realizado!");
+				//pb.setVisibility(View.GONE);
+			} else {
+				Toast.makeText(getApplicationContext(),
+						"Error de Conexion, vuelva a intentarlo!", Toast.LENGTH_SHORT).show();
+				pb.setVisibility(View.GONE);
+				txt.setText(0 + " % realizado!");
 
-		   }
-		  }
-		 };
+			}
+		}
+	};
 
-	public void salir(View view){
+	public void salir(View view) {
 		finish();
 	}
 
 	public void SincronizarUsuarios(View view) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("¿Iniciar sincronización de Usuarios?")
-			.setCancelable(false)
-			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					new sincronizar_usuarios().start();
-				}
-			})
-			.setNegativeButton("No", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
+		builder.setMessage("Desea Sincronizar Usuarios?")
+				.setCancelable(false)
+				.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						new sincronizar_usuarios().start();
+					}
+				})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
-				}
-			});
+					}
+				});
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
 
 	// Conexión HTTP, android solo permite a través de hilos
-	 class sincronizar_usuarios extends Thread {
-	 	@Override
-	 	public void run() {
+	class sincronizar_usuarios extends Thread {
+		@Override
+		public void run() {
 			try {
 				SoapObject request = new SoapObject(namespace, Metodosincronizarusuarios);
-				SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
+				SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
 				envelope.dotNet = true;
 				envelope.setOutputSoapObject(request);
 				System.out.println(url);
 				HttpTransportSE transporte = new HttpTransportSE(url);
-				try
-				{
+				try {
 					transporte.call(accionSoapsincronizarusuarios, envelope);
-				}catch(Exception e){
+				} catch (Exception e) {
 					System.out.println("Error al llamar al web service: " + e);
 					progreso = 99;
 					Message msg = new Message();
@@ -138,32 +137,26 @@ public class Sincronizar extends Activity {
 				int count = vectordeusuarios.size(); // Cantidad de registros
 
 				UtilidadesSQL sql3 = new UtilidadesSQL(getApplicationContext(),
-						"DBUsuarios", null,versiondb);
+						"DBUsuarios", null, versiondb);
 				final SQLiteDatabase db3 = sql3.getWritableDatabase();
 
-				try
-				{
+				try {
 					db3.execSQL("delete from  Usuarios");
 					db3.execSQL("DROP TABLE IF EXISTS Usuarios");
-				}catch (Exception e){
+				} catch (Exception e) {
 					progreso = 99;
 					Message msg = new Message();
 					puente.sendMessage(msg);
 				}
 
-				try
-				{
+				try {
 					db3.execSQL("CREATE TABLE Usuarios (_id INTEGER PRIMARY KEY AUTOINCREMENT, desusuario TEXT, passusuario TEXT,codusuario INTEGER,codvendedor INTEGER,codcobrador INTEGER,desvendedor TEXT,descobradror TEXT, usuarioactual INTEGER)");
-				}catch (Exception e){
-					//int aa = -99;
-					//Message msg = new Message();
-					//msg.obj = aa;
-					//puente.sendMessage(msg);
+				} catch (Exception e) {
+					System.out.println(e);
 				}
-				for (int i = 0; i <count; i++)
-				{
+				for (int i = 0; i < count; i++) {
 					UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
-							"DBUsuarios", null,versiondb);
+							"DBUsuarios", null, versiondb);
 					final SQLiteDatabase db = sql.getWritableDatabase();
 					SoapObject test = (SoapObject) vectordeusuarios.get(i);
 					String Stringdesusuario = (String) test.getProperty("desusuario");
@@ -175,8 +168,8 @@ public class Sincronizar extends Activity {
 					String Stringdescobrador = (String) test.getProperty("descobrador");    // se recibe como string
 
 					int codusuario = Integer.parseInt(Stringcodusuario); // se convierte a integer
-					int codvendedor =Integer.parseInt(Stringcodvendedor); // se convierte a integer
-					int codcobrador =Integer.parseInt(Stringcodcobrador); // se convierte a integer
+					int codvendedor = Integer.parseInt(Stringcodvendedor); // se convierte a integer
+					int codcobrador = Integer.parseInt(Stringcodcobrador); // se convierte a integer
 					if (db != null) {
 						ContentValues nuevoRegistro = new ContentValues();
 						nuevoRegistro.put("desusuario", Stringdesusuario.trim());
@@ -186,12 +179,12 @@ public class Sincronizar extends Activity {
 						nuevoRegistro.put("desvendedor", Stringdesvendedor.trim());
 						nuevoRegistro.put("codcobrador", codcobrador);
 						nuevoRegistro.put("descobradror", Stringdescobrador.trim());
-						nuevoRegistro.put("usuarioactual",0);
+						nuevoRegistro.put("usuarioactual", 0);
 
 						try {
 							db.insert("Usuarios", null, nuevoRegistro);
 							// Se obtiene el porcentaje y se actualiza la barra por cada registro
-							int porcentaje= (i+1)*100/count;
+							int porcentaje = (i + 1) * 100 / count;
 							pb.setProgress(porcentaje);
 							txt.setText(porcentaje + " %");
 							Thread.sleep(30);
@@ -203,7 +196,7 @@ public class Sincronizar extends Activity {
 						db.close();
 					}
 				}
-				progreso=100;
+				progreso = 100;
 				Message msg = new Message();
 				puente.sendMessage(msg);
 
@@ -213,209 +206,153 @@ public class Sincronizar extends Activity {
 				puente.sendMessage(msg);
 			}
 		}
-	 }
+	}
 
 	class Mihilobancos extends Thread {
-	  public void run() {
+		@Override
+		public void run() {
+			try {
 
-		  try{
 				UtilidadesSQL sql33 = new UtilidadesSQL(getApplicationContext(),
-				"DBUsuarios", null,versiondb);
+						"DBUsuarios", null, versiondb);
 				final SQLiteDatabase db33 = sql33.getWritableDatabase();
 				db33.execSQL("DROP TABLE IF EXISTS Bancos");
 				db33.execSQL("CREATE TABLE Bancos (_id INTEGER PRIMARY KEY AUTOINCREMENT, desbanco TEXT, codbanco INTEGER)");
-				}catch(Exception e){
-						System.out.println(e);
-						e.printStackTrace();
-				}
+			} catch (Exception e) {
+				System.out.println(e);
+				e.printStackTrace();
+			}
 
-			try{
+			try {
 
-				 SoapObject request = new SoapObject(namespace, consultabancos);
-		    	 SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
-		    	 envelope.dotNet = true;
-		    	 envelope.setOutputSoapObject(request);
-		    	 HttpTransportSE transporte = new HttpTransportSE(url);
+				SoapObject request = new SoapObject(namespace, consultabancos);
+				SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+				envelope.dotNet = true;
+				envelope.setOutputSoapObject(request);
+				HttpTransportSE transporte = new HttpTransportSE(url);
 
-		    	 transporte.call(accionSoapconsultabancos, envelope);
+				transporte.call(accionSoapconsultabancos, envelope);
 
-		    	 SoapObject resultsRequestSOAP = (SoapObject) envelope.bodyIn;
-		    	 Vector vectordeusuarios = (Vector) resultsRequestSOAP.getProperty("return");
-		    	 int count = vectordeusuarios.size(); // contiene la cantidad de registros(objetos usuarios) devueltos
-		    	 for (int i = 0; i <count; i++)
-		    	 {
-		    		 SoapObject test = (SoapObject) vectordeusuarios.get(i);
-		    		 String Stringdesbanco = (String) test.getProperty("desbanco");
-		    		 String Stringcodbanco = (String) test.getProperty("codbanco");    // se recibe como string
+				SoapObject resultsRequestSOAP = (SoapObject) envelope.bodyIn;
+				Vector vectordeusuarios = (Vector) resultsRequestSOAP.getProperty("return");
+				int count = vectordeusuarios.size(); // contiene la cantidad de registros(objetos usuarios) devueltos
+				for (int i = 0; i < count; i++) {
+					SoapObject test = (SoapObject) vectordeusuarios.get(i);
+					String Stringdesbanco = (String) test.getProperty("desbanco");
+					String Stringcodbanco = (String) test.getProperty("codbanco");    // se recibe como string
 
-		    		 int codbanco = Integer.parseInt(Stringcodbanco); // se convierte a integer
-		    		 	UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
-								"DBUsuarios", null, versiondb);
-						final SQLiteDatabase db = sql.getWritableDatabase();
-						if (db != null) {
-							ContentValues nuevoRegistro = new ContentValues();
-							nuevoRegistro.put("desbanco", Stringdesbanco.trim());
-							nuevoRegistro.put("codbanco", codbanco);
+					int codbanco = Integer.parseInt(Stringcodbanco); // se convierte a integer
+					UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
+							"DBUsuarios", null, versiondb);
+					final SQLiteDatabase db = sql.getWritableDatabase();
+					if (db != null) {
+						ContentValues nuevoRegistro = new ContentValues();
+						nuevoRegistro.put("desbanco", Stringdesbanco.trim());
+						nuevoRegistro.put("codbanco", codbanco);
 
-							try {
-								db.insert("Bancos", null, nuevoRegistro);
-							} catch (Exception e) {
-								System.out.println(e);
-								e.printStackTrace();
-							}
-							db.close();
+						try {
+							db.insert("Bancos", null, nuevoRegistro);
+							// Se obtiene el porcentaje y se actualiza la barra por cada registro
+							int porcentaje = (i + 1) * 100 / count;
+							pb.setProgress(porcentaje);
+							txt.setText(porcentaje + " %");
+							Thread.sleep(30);
+						} catch (Exception e) {
+							progreso = 99;
+							Message msg = new Message();
+							puente.sendMessage(msg);
+							e.printStackTrace();
 						}
+						db.close();
+					}
 
-		    	 }
-		    	   // Toast.makeText(getApplicationContext(),
-		    		//		"Tabla de Bancos  sincronizada!", Toast.LENGTH_SHORT)
-		    		//		.show();
+				}
+				progreso = 100;
+				Message msg = new Message();
+				puente.sendMessage(msg);
 
-
-		    	 for(int a=50;a<80;a++){
-			         int contador = a;
-			         Message msg = new Message();
-			         msg.obj = a;
-			         puente.sendMessage(msg);
-
-			        }
-
-
-
-
-		    	 for(int a=80;a<100;a++){
-			         int contador = a;
-			         Message msg = new Message();
-			         msg.obj = a;
-			         puente.sendMessage(msg);
-
-			        }
-			}catch (Exception e){
-
+			} catch (Exception e) {
 				progreso = 99;
 				Message msg = new Message();
 				puente.sendMessage(msg);
 			}
-	  }
+		}
 
-}
-
-class mihiloformasdecobro extends Thread{
-	public void run(){
-		try{
-
-			 int bbb;
-	          bbb=20;
-	          Message msg2 = new Message();
-	          msg2.obj = bbb;
-	          puente.sendMessage(msg2);
-
-			UtilidadesSQL sql66 = new UtilidadesSQL(getApplicationContext(),
-			"DBUsuarios", null,versiondb);
-			final SQLiteDatabase db66 = sql66.getWritableDatabase();
-			db66.execSQL("DROP TABLE IF EXISTS Formas");
-			db66.execSQL("CREATE TABLE Formas (_id INTEGER PRIMARY KEY AUTOINCREMENT, desforcobro TEXT, codforcobro INTEGER)");
-			}catch(Exception e){
-			     int aa = -99;
-		         Message msg = new Message();
-		         msg.obj = aa;
-		         puente.sendMessage(msg);
-
-				//	Toast.makeText(getApplicationContext(),
-				//	"Error al crear la tabla de Formas de Cobro", Toast.LENGTH_SHORT).show();					e.printStackTrace();
-			}
-
-
-				try{
-				      	 SoapObject request_forma = new SoapObject(namespace, MetodobuscarFormas);
-				      	 SoapSerializationEnvelope envelope_formas =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
-				         envelope_formas.dotNet = true;
-				      	 envelope_formas.setOutputSoapObject(request_forma);
-				      	 HttpTransportSE transporte_formas = new HttpTransportSE(url);
-				      	 transporte_formas.call(accionSoapFormas, envelope_formas);
-
-				      	 SoapObject resultsRequestSOAP_formas = (SoapObject) envelope_formas.bodyIn;
-				      	 Vector vectordeformas = (Vector) resultsRequestSOAP_formas.getProperty("return");
-				      	 int count_formas = vectordeformas.size(); // contiene la cantidad de registros(objetos bancos) devueltos
-
-
-
-					  	 for(int a=50;a<80;a++){
-						         int contador = a;
-						         Message msg = new Message();
-						         msg.obj = a;
-						         puente.sendMessage(msg);
-
-						        }
-
-				      	 for (int i = 0; i <count_formas; i++)
-				      	 {
-				      		 SoapObject test_formas = (SoapObject) vectordeformas.get(i);
-				      		 String Stringdesforcobro = (String) test_formas.getProperty("desforcobro");
-				      		 String Stringcodforcobro = (String) test_formas.getProperty("codforcobro");    // se recibe como string
-				      		 int codforcobro = Integer.parseInt(Stringcodforcobro); // se convierte a integer
-
-				    		 	UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
-										"DBUsuarios", null, versiondb);
-								final SQLiteDatabase db = sql.getWritableDatabase();
-
-								if (db != null) {
-									ContentValues nuevoRegistro = new ContentValues();
-									nuevoRegistro.put("desforcobro", Stringdesforcobro.trim());
-									nuevoRegistro.put("codforcobro", codforcobro);
-
-									try {
-										db.insert("Formas", null, nuevoRegistro);
-									} catch (Exception e) {
-
-									     int aa = -99;
-								         Message msg = new Message();
-								         msg.obj = aa;
-								         puente.sendMessage(msg);
-
-										//Toast.makeText(getApplicationContext(),
-										//		"Error al Insertar las formas", Toast.LENGTH_SHORT).show();
-										//e.printStackTrace();
-									}
-									db.close();
-
-
-								   }
-						 }
-
-
-				      	 for(int a=80;a<100;a++){
-					         int contador = a;
-					         Message msg = new Message();
-					         msg.obj = a;
-					         puente.sendMessage(msg);
-
-					        }
-
-				       	} catch (Exception e) {
-				            int aa = -99;
-					         Message msg = new Message();
-					         msg.obj = aa;
-					         puente.sendMessage(msg);
-
-				       		//  Toast.makeText(getApplicationContext(),
-								//"Error de conexion1 "+e.getMessage() , Toast.LENGTH_SHORT)
-								//.show();
-				      	}
 	}
-}
 
-//MetodobuscarTipoSolicitud
-//accionSoapTipoSolicitud
+	class mihiloformasdecobro extends Thread {
+		public void run() {
+			try {
+				UtilidadesSQL sql66 = new UtilidadesSQL(getApplicationContext(),
+						"DBUsuarios", null, versiondb);
+				final SQLiteDatabase db66 = sql66.getWritableDatabase();
+				db66.execSQL("DROP TABLE IF EXISTS Formas");
+				db66.execSQL("CREATE TABLE Formas (_id INTEGER PRIMARY KEY AUTOINCREMENT, desforcobro TEXT, codforcobro INTEGER)");
+			} catch (Exception e) {
+				progreso = -99;
+				Message msg = new Message();
+				puente.sendMessage(msg);
+			}
+			try {
+				SoapObject request_forma = new SoapObject(namespace, MetodobuscarFormas);
+				SoapSerializationEnvelope envelope_formas = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+				envelope_formas.dotNet = true;
+				envelope_formas.setOutputSoapObject(request_forma);
+				HttpTransportSE transporte_formas = new HttpTransportSE(url);
+				transporte_formas.call(accionSoapFormas, envelope_formas);
 
-class mihilotiposolicitud extends Thread{
+				SoapObject resultsRequestSOAP_formas = (SoapObject) envelope_formas.bodyIn;
+				Vector vectordeformas = (Vector) resultsRequestSOAP_formas.getProperty("return");
+				int count = vectordeformas.size(); // contiene la cantidad de registros devueltos
+
+
+				for (int i = 0; i < count; i++) {
+					SoapObject test_formas = (SoapObject) vectordeformas.get(i);
+					String Stringdesforcobro = (String) test_formas.getProperty("desforcobro");
+					String Stringcodforcobro = (String) test_formas.getProperty("codforcobro");    // se recibe como string
+					int codforcobro = Integer.parseInt(Stringcodforcobro); // se convierte a integer
+
+					UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
+							"DBUsuarios", null, versiondb);
+					final SQLiteDatabase db = sql.getWritableDatabase();
+
+					if (db != null) {
+						ContentValues nuevoRegistro = new ContentValues();
+						nuevoRegistro.put("desforcobro", Stringdesforcobro.trim());
+						nuevoRegistro.put("codforcobro", codforcobro);
+
+						try {
+							db.insert("Formas", null, nuevoRegistro);
+							int porcentaje = (i + 1) * 100 / count;
+							pb.setProgress(porcentaje);
+							txt.setText(porcentaje + " %");
+							Thread.sleep(30);
+						} catch (Exception e) {
+							progreso = 99;
+							Message msg = new Message();
+							puente.sendMessage(msg);
+						}
+						db.close();
+
+					}
+				}
+				progreso = 100;
+				Message msg = new Message();
+				puente.sendMessage(msg);
+
+			} catch (Exception e) {
+				progreso = 99;
+				Message msg = new Message();
+				puente.sendMessage(msg);
+				e.printStackTrace();
+			}
+		}
+	}
+
+
+/*class mihilotiposolicitud extends Thread{
 	public void run(){
 		try{
-			int bbb;
-	        bbb=20;
-	        Message msg2 = new Message();
-	        msg2.obj = bbb;
-	        puente.sendMessage(msg2);
 
 			UtilidadesSQL sql66 = new UtilidadesSQL(getApplicationContext(),
 			"DBUsuarios", null,versiondb);
@@ -423,17 +360,12 @@ class mihilotiposolicitud extends Thread{
 			db66.execSQL("DROP TABLE IF EXISTS Tiposolicitud");
 			db66.execSQL("CREATE TABLE Tiposolicitud (_id INTEGER PRIMARY KEY AUTOINCREMENT, dessolicitud TEXT, codtiposolicitud INTEGER)");
 			}catch(Exception e){
-			     int aa = -99;
+			     progreso = -99;
 		         Message msg = new Message();
-		         msg.obj = aa;
 		         puente.sendMessage(msg);
-
-				//	Toast.makeText(getApplicationContext(),
-				//	"Error al crear la tabla de Formas de Cobro", Toast.LENGTH_SHORT).show();					e.printStackTrace();
+		         System.out.println(e + " Error en la creacion de la tabla Tipo de Solicitud ********************************************");
+		         e.printStackTrace();
 			}
-
-		//MetodobuscarTipoSolicitud
-		//accionSoapTipoSolicitud
 
 				try{
 				      	 SoapObject request_tiposolicitud = new SoapObject(namespace,MetodobuscarTipoSolicitud);
@@ -441,21 +373,11 @@ class mihilotiposolicitud extends Thread{
 				      	 envelope_tiposolicitud.dotNet = true;
 				         envelope_tiposolicitud.setOutputSoapObject(request_tiposolicitud);
 				      	 HttpTransportSE transporte_tiposolicitud = new HttpTransportSE(url);
-				       	transporte_tiposolicitud.call(accionSoapTipoSolicitud, envelope_tiposolicitud);
+				      	 transporte_tiposolicitud.call(accionSoapTipoSolicitud, envelope_tiposolicitud);
 
 				      	 SoapObject resultsRequestSOAP_tiposolicitud = (SoapObject) envelope_tiposolicitud.bodyIn;
 				      	 Vector vectordetiposolicitud = (Vector) resultsRequestSOAP_tiposolicitud.getProperty("return");
 				      	 int count_tiposolicitud = vectordetiposolicitud.size(); // contiene la cantidad de registros(objetos bancos) devueltos
-
-
-
-					  	 for(int a=50;a<80;a++){
-						         int contador = a;
-						         Message msg = new Message();
-						         msg.obj = a;
-						         puente.sendMessage(msg);
-
-						        }
 
 				      	 for (int i = 0; i <count_tiposolicitud; i++)
 				      	 {
@@ -476,51 +398,37 @@ class mihilotiposolicitud extends Thread{
 
 									try {
 										db.insert("Tiposolicitud", null, nuevoRegistro);
+										progreso = 100;
+										Message msg = new Message ();
+										puente.sendMessage(msg);
 									} catch (Exception e) {
-
-									     int aa = -99;
+									     progreso = -99;
 								         Message msg = new Message();
-								         msg.obj = aa;
 								         puente.sendMessage(msg);
-
-										//Toast.makeText(getApplicationContext(),
-										//		"Error al Insertar las formas", Toast.LENGTH_SHORT).show();
-										//e.printStackTrace();
+								         e.printStackTrace();
+								         System.out.println(e +" Error al insertar Tipos de Solicitud");
 									}
 									db.close();
 
-
 								   }
 						 }
-
-
-				      	 for(int a=80;a<100;a++){
-					         int contador = a;
-					         Message msg = new Message();
-					         msg.obj = a;
-					         puente.sendMessage(msg);
-
-					        }
+					progreso = 100;
+					Message msg = new Message();
+					puente.sendMessage(msg);
 
 				       	} catch (Exception e) {
-				            int aa = -99;
+				            progreso = -99;
 					         Message msg = new Message();
-					         msg.obj = aa;
 					         puente.sendMessage(msg);
-
-				       		//  Toast.makeText(getApplicationContext(),
-								//"Error de conexion1 "+e.getMessage() , Toast.LENGTH_SHORT)
-								//.show();
+					         e.printStackTrace();
 				      	}
 	}
-}
+}*/
 
 
-class Mihiloclientes extends Thread{
+	class Mihiloclientes extends Thread{
 	  @Override
 		   public void run() {
-			 Log.e(ETIQUETA_ERROR, "clientes en hilo 1");
-
 			try{
 				UtilidadesSQL sql44 = new UtilidadesSQL(getApplicationContext(),
 						"DBUsuarios", null,versiondb);
@@ -529,77 +437,48 @@ class Mihiloclientes extends Thread{
 				db44.execSQL("CREATE TABLE Clientes (_id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT ,numcliente  TEXT ,codcliente int,nif TEXT,descuentos TEXT,codsitua TEXT,diasadicional TEXT ,latitud TEXT ,longitud TEXT, enviadofoto int, enviadoubicacion int     , fototransferir int,ubicaciontransferir int ,clienteactualizado int , ubicacionenmapa TEXT , direccion TEXT  )");
 
 			}catch(Exception e){
-				Log.e(ETIQUETA_ERROR, "clientes en hilo errro al crear la tabla");
-			//	Toast.makeText(getApplicationContext(),
-			//	"Error al crear la tabla de Clientes", Toast.LENGTH_SHORT).show();					e.printStackTrace();
-
+				progreso = -99;
+				Message msg = new Message();
+				puente.sendMessage(msg);
+				e.printStackTrace();
+				System.out.println(e+" Error al crear la tabla clientes");
 		}
 
 	try{
-
-		String sql ="SELECT codcliente,numcliente,nombre,nif,descuentos,codsitua,diasadicional,IFNULL(latitud,'')AS latitud ,IFNULL(longitud,'')AS longitud ,ubicacionenmapa  ,IFNULL(direccion ,'')as  direccion FROM clientes where codvendedor=29";
-
-		// String sql ="SELECT codcliente,numcliente,nombre,nif,descuentos,codsitua,diasadicional,IFNULL(latitud,'0') AS latitud,IFNULL(longitud,'0') AS longitud   FROM clientes  ";
 		 SoapObject request_Clientes = new SoapObject(namespace, MetodoFiltrarClientesObras);
-	   	 request_Clientes.addProperty("Parametro",sql);
 	   	 SoapSerializationEnvelope envelope_Clientes =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
 	   	 envelope_Clientes.dotNet = true;
 	   	 envelope_Clientes.setOutputSoapObject(request_Clientes);
-
-	   	Log.e(ETIQUETA_ERROR, "clientes en hilo 2");
 	   	 HttpTransportSE transporte_Clientes = new HttpTransportSE(url);
-	   	Log.e(ETIQUETA_ERROR, "clientes en hilo 3");
 	   	 transporte_Clientes.call(accionSoapFiltrarClientesObras, envelope_Clientes);
-	   	Log.e(ETIQUETA_ERROR, "clientes en hilo 4");
-	   	 SoapObject resultsRequestSOAP_Clientes = (SoapObject) envelope_Clientes.bodyIn;
-	   	Log.e(ETIQUETA_ERROR, "clientes en hilo 5");
-	   	 Vector vectordeClientes = (Vector) resultsRequestSOAP_Clientes.getProperty("return");
-	   	Log.e(ETIQUETA_ERROR, "clientes en hilo 6");
-	   	 int count = vectordeClientes.size(); // contiene la cantidad de registros(objetos bancos) devueltos
+
+	   	SoapObject resultsRequestSOAP_Clientes = (SoapObject) envelope_Clientes.bodyIn;
+	   	Vector vectordeClientes = (Vector) resultsRequestSOAP_Clientes.getProperty("return");
+	   	int count = vectordeClientes.size(); // contiene la cantidad de registros(objetos clientes) devueltos
 
 
-	   	// for(int a=0;a<90;a++){
-	    //     int contador = a;
-	    ///     Message msg = new Message();
-	     //    msg.obj = a;
-	     //    puente.sendMessage(msg);
-
-	      //  }
-
-
-  	 for (int i = 0; i <count; i++)
-  	 {
+  	 for (int i = 0; i <count; i++) {
   		int a=(i*100/count);
   	    Message msg = new Message();
         msg.obj = a;
         puente.sendMessage(msg);
 
-
-
   		 SoapObject test = (SoapObject) vectordeClientes.get(i);
-  		 String Stringnombre = (String) test.getProperty("nombre");
+
   		 String Stringcodcliente = (String) test.getProperty("codcliente");    // se recibe como string
   		 String Stringnumcliente = (String) test.getProperty("numcliente");    // se recibe como string
-
+		 String Stringnombre = (String) test.getProperty("nombre");
   		 String Strinnif = (String) test.getProperty("nif");    // se recibe como string
   		 String Stringdescuentos = (String) test.getProperty("descuentos");    // se recibe como string
   		 String Stringcodsitua = (String) test.getProperty("codsitua");    // se recibe como string
   		 String diasadicional = (String) test.getProperty("diasadicional");    // se recibe como string
-  		String ubicacionenmapa = (String) test.getProperty("ubicacionenmapa");    // se recibe como string
+		 String latitudcliente = (String) test.getProperty("latitud");    // se recibe como string
+		 String longitudcliente = (String) test.getProperty("longitud");    // se recibe como string
+		 String ubicacionenmapa = (String) test.getProperty("ubicacionenmapa");    // se recibe como string
   		 String direccion= (String) test.getProperty("direccion");
 
-
-  		 String latitudcliente = (String) test.getProperty("latitud");    // se recibe como string
-  		 String longitudcliente = (String) test.getProperty("longitud");    // se recibe como string
-
-
-  		 String latitud  = "0";//(String) test.getProperty("latitud");    // se recibe como string
-  		 String longitud  = "0";//(String) test.getProperty("longitu");    // se recibe como string
   		 String enviadofoto ="0";
   		 String enviadoubicacion="0";
-
-
-
 
   		 int codcliente = Integer.parseInt(Stringcodcliente); // se convierte a integer
   		 int fototransferir =0;
@@ -610,78 +489,57 @@ class Mihiloclientes extends Thread{
 				final SQLiteDatabase db = sql3.getWritableDatabase();
 				if (db != null) {
 					ContentValues nuevoRegistro = new ContentValues();
-					nuevoRegistro.put("nombre", Stringnombre.trim());
+
 					nuevoRegistro.put("numcliente", Stringnumcliente.trim());
 					nuevoRegistro.put("codcliente", codcliente);
-
+					nuevoRegistro.put("nombre", Stringnombre.trim());
 					nuevoRegistro.put("nif", Strinnif);
 					nuevoRegistro.put("descuentos", Stringdescuentos);
 					nuevoRegistro.put("codsitua", Stringcodsitua);
 					nuevoRegistro.put("diasadicional", diasadicional);
-
-					//nuevoRegistro.put("latitud",latitud);
-					//nuevoRegistro.put("longitud",longitud);
-
+					nuevoRegistro.put("latitud",latitudcliente);
+					nuevoRegistro.put("longitud",longitudcliente);
+					nuevoRegistro.put("ubicacionenmapa",ubicacionenmapa);
+					nuevoRegistro.put("direccion",direccion);
 					nuevoRegistro.put("enviadofoto",enviadofoto);
 					nuevoRegistro.put("enviadoubicacion",enviadoubicacion);
 					nuevoRegistro.put("fototransferir",fototransferir);
 					nuevoRegistro.put("ubicaciontransferir",ubicaciontransferir);
 
-
-
-					nuevoRegistro.put("latitud",latitudcliente);
-					nuevoRegistro.put("longitud",longitudcliente);
 					nuevoRegistro.put("clienteactualizado",0);
-					nuevoRegistro.put("ubicacionenmapa",ubicacionenmapa);
-					nuevoRegistro.put("direccion",direccion);
 
 
-
-					//**
 					try {
 						db.insert("Clientes", null, nuevoRegistro);
-						Log.e(ETIQUETA_ERROR, "clientes Insertado");
+						int porcentaje = (i + 1) * 100 / count;
+						pb.setProgress(porcentaje);
+						txt.setText(porcentaje + " %");
+						Thread.sleep(30);
 					} catch (Exception e) {
-						Log.e(ETIQUETA_ERROR, "clientes error 2 "+e.toString());
-					//	Toast.makeText(getApplicationContext(),
-					//			"Error al Insertar un cliente", Toast.LENGTH_SHORT).show();
-					//	e.printStackTrace();
+						progreso = 99;
+						//Message msg = new Message();
+						puente.sendMessage(msg);
+						e.printStackTrace();
 					}
 					db.close();
 				}
-
-
   	 }
-
-  //	 for(int a=90;a<100;a++){
-    //     int contador = a;
-    //     Message msg = new Message();
-    //     msg.obj = a;
-    //     puente.sendMessage(msg);
-
-      //  }
-  	 //Toast.makeText(getApplicationContext(),
-  		//		"Tabla de Clientes sincronizada!", Toast.LENGTH_SHORT)
-  			//	.show();
+		progreso = 100;
+		Message msg = new Message();
+		puente.sendMessage(msg);
 
 	}catch (Exception e){
-		Log.e(ETIQUETA_ERROR, "clientes error 3"+e.toString());
-		  int aa = -99;
-	         Message msg = new Message();
-	         msg.obj = aa;
-	         puente.sendMessage(msg);
-		//  Toast.makeText(getApplicationContext(),
-		//		"Problemas para conectar a la Base de Datos", Toast.LENGTH_SHORT)
-			//	.show();
+		progreso = -99;
+		Message msg = new Message();
+	    puente.sendMessage(msg);
+	    e.printStackTrace();
+	    System.out.println(e+" Error Ultimo");
 	}
-
-
-	//************
 	}
 
 }
 
-class Mihiloafiliados extends Thread{
+/*class Mihiloafiliados extends Thread{
 	 public void run() {
 	 try{
 			UtilidadesSQL sql55 = new UtilidadesSQL(getApplicationContext(),
@@ -767,7 +625,7 @@ class Mihiloafiliados extends Thread{
 
 
 }
-}
+}*/
 
 class Mihiloproductos extends Thread{
 		 public void run() {
@@ -777,55 +635,36 @@ class Mihiloproductos extends Thread{
 				final SQLiteDatabase db55 = sql55.getWritableDatabase();
 				db55.execSQL("DROP TABLE IF EXISTS Articulos");
 				db55.execSQL("CREATE TABLE Articulos (_id INTEGER PRIMARY KEY AUTOINCREMENT, codarticulo INTEGER ,descripcion  TEXT ,codigobarras TEXT, precio_pvp INTEGER)");
-				}catch(Exception e){
-			//			Toast.makeText(getApplicationContext(),
-			//			"Error al crear la tabla de Articulos", Toast.LENGTH_SHORT).show();					e.printStackTrace();
-				}
-
-
+		 }catch(Exception e){
+			 progreso = -99;
+			 Message msg = new Message();
+			 puente.sendMessage(msg);
+			 e.printStackTrace();
+		 }
 			try{
-
 				 SoapObject request = new SoapObject(namespace, Metodosincronizarproductos);
 		    	 SoapSerializationEnvelope envelope =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
 		    	 envelope.dotNet = true;
 		    	 envelope.setOutputSoapObject(request);
 		    	 HttpTransportSE transporte = new HttpTransportSE(url);
-
 		    	 transporte.call(accionSoapsincronizarproductos, envelope);
 
 		    	 SoapObject resultsRequestSOAP = (SoapObject) envelope.bodyIn;
 		    	 Vector vectordeusuarios = (Vector) resultsRequestSOAP.getProperty("return");
 		    	 int count = vectordeusuarios.size(); // contiene la cantidad de registros(objetos usuarios) devueltos
 
-		    //	 Toast.makeText(getApplicationContext(),
-		    //				"registros="+count, Toast.LENGTH_LONG).show();
-
-		    	 for (int i = 0; i <count; i++)
-		    	 {
-
-		    		 int a=(i*100/count);
-		    	  	    Message msg = new Message();
-		    	        msg.obj = a;
-		    	        puente.sendMessage(msg);
-
-
-
+		    	 for (int i = 0; i <count; i++) {
+		    		 //int a=(i*100/count);
 		    		 String Stringcodarticulo = "";
 		    		 String Stringprecio_pvp ="";
 		    		 String  Stringdescripcion ="";
 		    		 String  Stringcodigobarras ="";
-		    		 try{
-		    		     SoapObject test = (SoapObject) vectordeusuarios.get(i);
-		    		       Stringcodarticulo = (String) test.getProperty("codarticulo");
-		    		      Stringdescripcion = (String) test.getProperty("descripcion");    // se recibe como string
-		    		       Stringcodigobarras = (String) test.getProperty("codigobarras");    // se recibe como string
-		    		    Stringprecio_pvp = (String) test.getProperty("precio_pvp");    // se recibe como string
 
-		    		 }catch (Exception e){
-			 			 ///   Toast.makeText(getApplicationContext(),
-			 	    		//		"NO P�DO LEER", Toast.LENGTH_LONG)
-			 	    		//		.show();
-			 		 }
+		    		  SoapObject test = (SoapObject) vectordeusuarios.get(i);
+		    		  Stringcodarticulo = (String) test.getProperty("codarticulo");
+		    		  Stringdescripcion = (String) test.getProperty("descripcion");    // se recibe como string
+		    		  Stringcodigobarras = (String) test.getProperty("codigobarras");    // se recibe como string
+		    		  Stringprecio_pvp = (String) test.getProperty("precio_pvp");    // se recibe como string
 
 		    		 int codarticulo = Integer.parseInt(Stringcodarticulo); // se convierte a integer
 		    		 int precio_pvp = Integer.parseInt(Stringprecio_pvp); // se convierte a integer
@@ -844,33 +683,27 @@ class Mihiloproductos extends Thread{
 
 							try {
 								db.insert("Articulos", null, nuevoRegistro);
+								int porcentaje = (i + 1) * 100 / count;
+								pb.setProgress(porcentaje);
+								txt.setText(porcentaje + " %");
+								Thread.sleep(30);
 							} catch (Exception e) {
-							//	//Toast.makeText(getApplicationContext(),
-							//			"Error al Insertar", Toast.LENGTH_SHORT).show();
-							//	e.printStackTrace();
+							e.printStackTrace();
 							}
 							db.close();
 						}
 
 		    	 }
-		    	// Toast.makeText(getApplicationContext(),
-		    	//			"Actualizado con ="+count+" Articulos", Toast.LENGTH_SHORT)
-		    	///			.show();
+		    	 progreso=100;
+		    	 Message msg = new Message();
+		    	 puente.sendMessage(msg);
 
 			}catch (Exception e){
-
-				 int aa = -99;
+				 progreso=-99;
 		         Message msg = new Message();
-		         msg.obj = aa;
 		         puente.sendMessage(msg);
 
-
-				// Toast.makeText(getApplicationContext(),
-	    		//		"1-Problemas para conectar a la Base de Datos", Toast.LENGTH_SHORT)
-	    			//	.show();
-			    		//e.printStackTrace();
 			}
-
 
 	 }
 }
@@ -884,27 +717,19 @@ class mihilocobranzas extends Thread{
 				db55.execSQL("DROP TABLE IF EXISTS detallefacturaspagadas");  //11**
 				db55.execSQL("CREATE TABLE detallefacturaspagadas (_id INTEGER PRIMARY KEY AUTOINCREMENT, id_cobro INTEGER ,numventa  TEXT ,codcliente INTEGER, numcliente TEXT,codcobrador INTEGER,fechavcto TEXT,saldo INTEGER,importepagado INTEGER,codventa  INTEGER,rendido INTEGER,numerorecibo INTEGER,descobrador TEXT,nombre TEXT,fecharecibo TEXT,total INTEGER,ruc TEXT,enviado INTEGER, horarecibo TEXT)");
 
-
 				db55.execSQL("DROP TABLE IF EXISTS detalleformadecobros");   //2
 				db55.execSQL("CREATE TABLE detalleformadecobros (_id INTEGER PRIMARY KEY AUTOINCREMENT, id_cobro INTEGER ,codcliente INTEGER,codcobrador INTEGER,fechadocumento TEXT,numerodocumento TEXT,monto INTEGER,codforcobro INTEGER,codbanco INTEGER,anulado INTEGER,rendido INTEGER,numerorecibo INTEGER,desforcobro TEXT,desbanco TEXT,descobrador TEXT)");
-
-
 
 				db55.execSQL("DROP TABLE IF EXISTS numerorecibo");
 				db55.execSQL("CREATE TABLE numerorecibo (_id INTEGER PRIMARY KEY AUTOINCREMENT, codcobrador INTEGER ,rango1 INTEGER,rango2 INTEGER,ultimo INTEGER)");
 
-
-
 				db55.execSQL("DROP TABLE IF EXISTS numerosconfallos");
 				db55.execSQL("CREATE TABLE numerosconfallos(_id INTEGER PRIMARY KEY AUTOINCREMENT, numcobro INTEGER, codcobrador INTEGER,numrecibo INTEGER )");
-
-
 
 				db55.execSQL("DROP TABLE IF EXISTS cobranzaespecial");
 			    db55.execSQL("CREATE TABLE cobranzaespecial(_id INTEGER PRIMARY KEY AUTOINCREMENT, numcobroespecial INTEGER, codbanco INTEGER,desbanco TEXT,numero TEXT,fecha TEXT, importe INTEGER, saldo INTEGER, codcobrador INTEGER, estado INTEGER,enviado INTEGER )");
 
-
-				db55.execSQL("DROP TABLE IF EXISTS chequescobrosespeciales");
+			    db55.execSQL("DROP TABLE IF EXISTS chequescobrosespeciales");
 				db55.execSQL("CREATE TABLE chequescobrosespeciales(_id INTEGER PRIMARY KEY AUTOINCREMENT, numcobroespecial INTEGER, idcobro INTEGER,importe INTEGER , codcobrador INTEGER,numcobro INTEGER ,enviado INTEGER,codcliente INTEGER,numerorecibo INTEGER)");
 				//db55.execSQL("CREATE TABLE chequescobrosespeciales(_id INTEGER PRIMARY KEY AUTOINCREMENT, numcobroespecial INTEGER, idcobro INTEGER,importe INTEGER , codcobrador INTEGER,enviado INTEGER,codcliente INTEGER,numerorecibo INTEGER)");
 
@@ -953,127 +778,50 @@ class mihilocobranzas extends Thread{
 									db.insert("numerorecibo", null, nuevoRegistro);
 
 								} catch (Exception e) {
-
-
-									//Toast.makeText(getApplicationContext(),
-										//	"Error al Insertar las Rangos", Toast.LENGTH_SHORT).show();
-									//e.printStackTrace();
+									e.printStackTrace();
 								}
 								db.close();
-
-
 							   }
 					 }
 			       	} catch (Exception e) {
-			       	 int aa = -99;
+			       	 progreso = -99;
 			         Message msg = new Message();
-			         msg.obj = aa;
 			         puente.sendMessage(msg);
-			       		//   Toast.makeText(getApplicationContext(),
-						//	"Error de conexion1 "+e.getMessage() , Toast.LENGTH_SHORT)
-						//	.show();
 			      	}
 
-				 int aa = 100;
+				 progreso = 100;
 		         Message msg = new Message();
-		         msg.obj = aa;
 		         puente.sendMessage(msg);
-
 
 			}catch(Exception e){
 
-				 int aa = -99;
+				 progreso = -99;
 		         Message msg = new Message();
-		         msg.obj = aa;
+
 		         puente.sendMessage(msg);
 
 
 				}
-
-
 	 }
 }
 
 
-public void sincronizar_bancos_thread(){
-	Thread progresoBar = new Thread(new Runnable() {
-		public void run() {
-			for (i=0; i < 100; i++)
-			{
-				progreso += doWork();
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					progreso = 0;
-				}
-				puente.post(new Runnable() {
-					@Override
-					public void run() {
-						pb.setProgress(i);
-						txt.setText(i + " %");
-					}
-				});
-				//progreso = 100;
-			}
-		}
-		private int doWork() {
-			return i * 5;
-		}
-	});
-	progresoBar.start();
 
-
-     Mihilobancos hilobanco = new Mihilobancos();
-     hilobanco.start();
-}
-
-
-public void sincronizar_afiliados_thread(){
-		 progressDialog = new ProgressDialog(Sincronizar.this);
-	     progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	     progressDialog.setMessage("Sincronizando Afiliados...");
-	     progressDialog.setMax(100);
-	     progressDialog.setProgress(10);
-	     progressDialog.setCancelable(false);
-	     progressDialog.show();
-
-	     Mihiloafiliados hiloafiliados = new Mihiloafiliados();
-	     hiloafiliados.start();
-
-}
 
 public void sincronizar_productos_thread(){
-	 progressDialog = new ProgressDialog(Sincronizar.this);
-     progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-     progressDialog.setMessage("Sincronizando...");
-     progressDialog.setMax(100);
-     progressDialog.setProgress(10);
-     progressDialog.setCancelable(false);
-     progressDialog.show();
+
      Mihiloproductos hiloproductos = new Mihiloproductos();
      hiloproductos.start();
-}
-public void sincronizar_clientes_thread(){
-	 progressDialog = new ProgressDialog(Sincronizar.this);
-     progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-     progressDialog.setMessage("Sincronizando...");
-     progressDialog.setMax(100);
-     progressDialog.setProgress(10);
-     progressDialog.setCancelable(false);
-     progressDialog.show();
-     Mihiloclientes hiloclientes = new Mihiloclientes();
-     hiloclientes.start();
 }
 
 public void SincronizarBancos(View view){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Desea Sincronizar los Bancos en el Sistema?")
 		       .setCancelable(false)
-		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		       .setPositiveButton("Si", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   //sincronizar_bancos();
-		        	   sincronizar_bancos_thread();
+					   new Mihilobancos().start();
 		           }
 		       })
 		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -1088,10 +836,9 @@ public void SincronizarFormasdeCobro(View view){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Desea Sincronizar las formas de cobro?")
 		       .setCancelable(false)
-		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		       .setPositiveButton("Si", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
-
-		        	  sincronizar_formas_cobro_thread();
+					   new mihiloformasdecobro().start();
 
 		           }
 		       })
@@ -1105,101 +852,8 @@ public void SincronizarFormasdeCobro(View view){
 
 	}
 
-public void sincronizar_formas_cobro_thread(){
 
-		 progressDialog = new ProgressDialog(Sincronizar.this);
-	     progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	     progressDialog.setMessage("Sincronizando formas de cobro...");
-	     progressDialog.setMax(100);
-	     progressDialog.setProgress(10);
-	     progressDialog.setCancelable(false);
-	     progressDialog.show();
-	     mihiloformasdecobro hiloformasdecobro = new mihiloformasdecobro();
-	     hiloformasdecobro.start();
-
-	}
-
-public void sincronizar_tipo_solicitudes_thread(){
-
-	 progressDialog = new ProgressDialog(Sincronizar.this);
-    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-    progressDialog.setMessage("Sincronizando los  tipo de Solicitudes ");
-    progressDialog.setMax(100);
-    progressDialog.setProgress(10);
-    progressDialog.setCancelable(false);
-    progressDialog.show();
-
-    mihilotiposolicitud hilotipodesolicitudes = new mihilotiposolicitud();
-    hilotipodesolicitudes.start();
-
-}
-
-public void sincronizar_formas_cobro(){
-			try{
-		UtilidadesSQL sql66 = new UtilidadesSQL(getApplicationContext(),
-		"DBUsuarios", null,versiondb);
-		final SQLiteDatabase db66 = sql66.getWritableDatabase();
-		db66.execSQL("DROP TABLE IF EXISTS Formas");
-		db66.execSQL("CREATE TABLE Formas (_id INTEGER PRIMARY KEY AUTOINCREMENT, desforcobro TEXT, codforcobro INTEGER)");
-		}catch(Exception e){
-				Toast.makeText(getApplicationContext(),
-				"Error al crear la tabla de Formas de Cobro", Toast.LENGTH_SHORT).show();					e.printStackTrace();
-		}
-
-
-			try{
-			      	 SoapObject request_forma = new SoapObject(namespace, MetodobuscarFormas);
-			      	 SoapSerializationEnvelope envelope_formas =  new SoapSerializationEnvelope(SoapEnvelope.VER11);
-			         envelope_formas.dotNet = true;
-			      	 envelope_formas.setOutputSoapObject(request_forma);
-			      	 HttpTransportSE transporte_formas = new HttpTransportSE(url);
-			      	 transporte_formas.call(accionSoapFormas, envelope_formas);
-
-			      	 SoapObject resultsRequestSOAP_formas = (SoapObject) envelope_formas.bodyIn;
-			      	 Vector vectordeformas = (Vector) resultsRequestSOAP_formas.getProperty("return");
-			      	 int count_formas = vectordeformas.size(); // contiene la cantidad de registros(objetos bancos) devueltos
-
-
-			      	 for (int i = 0; i <count_formas; i++)
-			      	 {
-			      		 SoapObject test_formas = (SoapObject) vectordeformas.get(i);
-			      		 String Stringdesforcobro = (String) test_formas.getProperty("desforcobro");
-			      		 String Stringcodforcobro = (String) test_formas.getProperty("codforcobro");    // se recibe como string
-			      		 int codforcobro = Integer.parseInt(Stringcodforcobro); // se convierte a integer
-
-			    		 	UtilidadesSQL sql = new UtilidadesSQL(getApplicationContext(),
-									"DBUsuarios", null, versiondb);
-							final SQLiteDatabase db = sql.getWritableDatabase();
-
-							if (db != null) {
-								ContentValues nuevoRegistro = new ContentValues();
-								nuevoRegistro.put("desforcobro", Stringdesforcobro.trim());
-								nuevoRegistro.put("codforcobro", codforcobro);
-
-								try {
-									db.insert("Formas", null, nuevoRegistro);
-								} catch (Exception e) {
-									Toast.makeText(getApplicationContext(),
-											"Error al Insertar las formas", Toast.LENGTH_SHORT).show();
-									e.printStackTrace();
-								}
-								db.close();
-
-
-							   }
-					 }
-			       	} catch (Exception e) {
-					         Toast.makeText(getApplicationContext(),
-							"Error de conexion1 "+e.getMessage() , Toast.LENGTH_SHORT)
-							.show();
-			      	}
-
-
-	}
-
-public void SincronizarTipoSolicitudes (View view){
-
-
+/*public void SincronizarTipoSolicitudes (View view){
 
 
 	try{
@@ -1223,7 +877,7 @@ public void SincronizarTipoSolicitudes (View view){
 	       .setCancelable(false)
 	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
-	        	  sincronizar_tipo_solicitudes_thread();
+	        	  new mihilotiposolicitud().start();
 
 	           }
 	       })
@@ -1237,10 +891,10 @@ public void SincronizarTipoSolicitudes (View view){
 
 
 
-}
+}*/
 
 
-public void SincronizarSolicitudes (View view){
+/*public void SincronizarSolicitudes (View view){
 
 	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	builder.setMessage("Desea Reiniciar  las  Solicitudes?")
@@ -1276,7 +930,7 @@ public void SincronizarSolicitudes (View view){
 
 
 
-}
+}*/
 
 
 public void ReimprimirCobranzas(View view){
@@ -1306,10 +960,9 @@ public void ReimprimirCobranzas(View view){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Desea Sincronizar los Clientes ?")
 		       .setCancelable(false)
-		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		       .setPositiveButton("Si", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
-		        	   //sincronizar_clientes();
-		        	   sincronizar_clientes_thread();
+		        	   new Mihiloclientes().start();
 		           }
 		       })
 		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -1321,13 +974,7 @@ public void ReimprimirCobranzas(View view){
 		alert.show();
 	}
 		public void sincronizar_cobranzas_thread(){
-		 progressDialog = new ProgressDialog(Sincronizar.this);
-	     progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	     progressDialog.setMessage("Sincronizando...");
-	     progressDialog.setMax(100);
-	     progressDialog.setProgress(10);
-	     progressDialog.setCancelable(false);
-	     progressDialog.show();
+
 	     mihilocobranzas hilocobranzas = new mihilocobranzas();
 	     hilocobranzas.start();
 	}
